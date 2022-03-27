@@ -4,3 +4,4 @@ scikit-learn==0.24.2
 seaborn==0.11.2
 matplotlib==3.3.4
 scipy==1.5.4
+mlflow[extras]
