@@ -5,3 +5,4 @@ seaborn==0.11.2
 matplotlib==3.3.4
 scipy==1.5.4
 mlflow[extras]
+hyperopt==0.2.7
