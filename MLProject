@@ -1,0 +1,13 @@
+# Название проекта
+name: typical_project
+
+# Описание окружения. В данном случае окружение находится в
+# файле conda.yml.
+conda_env: conda_environment.yml
+
+entry_points:
+  main:
+    parameters:
+      alpha: {type: float, default: 0.5}
+      l1_ratio: {type: float, default: 0.1}
+    command: "python typical_project/train.py {alpha} {l1_ratio}"

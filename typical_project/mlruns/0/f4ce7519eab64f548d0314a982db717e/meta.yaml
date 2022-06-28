@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/educauchy/Documents/Dev/DS/Github/typical-project/app/mlruns/0/f4ce7519eab64f548d0314a982db717e/artifacts
+end_time: 1656274107309
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: ''
+run_id: f4ce7519eab64f548d0314a982db717e
+run_uuid: f4ce7519eab64f548d0314a982db717e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1656274104604
+status: 3
+tags: []
+user_id: educauchy
