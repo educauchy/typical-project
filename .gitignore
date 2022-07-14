@@ -130,4 +130,4 @@ dmypy.json
 
 # Custom
 env_typical_project/
-app/experiments/
+typical_project/experiments/

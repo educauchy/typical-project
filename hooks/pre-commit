@@ -1,0 +1,11 @@
+#!/bin/bash
+
+echo "Running tests..."
+if python -m unittest tests/test_hook.py
+then
+  echo "Tests passed!"
+  exit 0
+else
+  echo "One or more tests failed!"
+  exit 1
+fi

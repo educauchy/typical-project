@@ -6,4 +6,4 @@ TODO:
 - Add DVC
 - Add Airflow
 - Add Grafana
-- Add CI/CD
+- Add CI/CD (Github actions)
