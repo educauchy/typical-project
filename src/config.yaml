@@ -1,0 +1,59 @@
+tracking:
+  TRACKING_URI: 'http://localhost:5557'
+  EXPERIMENT_NAME: 'sklearn_experiment_1'
+  MODEL_NAME: 'test_model'
+  ARTIFACT_PATH: 'model'
+params:
+  0: 0
+metrics:
+  0: 0
+data:
+  train: './data/external/train.csv'
+  test: './data/external/test.csv'
+  target: 'target'
+  train_size: 0.9
+model:
+  random_state: 0
+  n_jobs: -1
+  strategy: 'model'
+  KFold_folds: 4
+  encoding:
+    - column: 'feature_13'
+      out_column: 'feature_13_enc'
+      method: 'label'
+      data: False
+    - column: 'feature_22'
+      out_column: 'feature_22_enc'
+      method: 'label'
+      data: False
+    - column: 'feature_36'
+      out_column: 'feature_36_enc'
+      method: 'label'
+      data: False
+  f_inter:
+    params:
+      degree: 2
+      interaction_only: False
+      include_bias: False
+  f_selection:
+    params:
+      n_features: 50
+  anomaly:
+    method: 'isoforest'
+    params:
+      n_estimators: 300
+  cluster:
+    method: 'DBSCAN'
+    params:
+      eps: 1.2
+  model:
+    method: 'LGBM'
+    params:
+      max_depth: 1
+      n_estimators: 500
+  param_grid:
+    impute__n_neighbors: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    anomaly__n_neighbors: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    cluster__eps: [0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2, 2.2, 2.4, 2.6, 2.8, 3]
+    model__n_estimators: [500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000, 3250, 3500, 3750, 4000]
+    model__max_depth: [1, 2, 3, 4, 5]
