@@ -7,7 +7,8 @@ conda_env: conda_environment.yml
 
 entry_points:
   main:
+    command: "python src/models/train.py"
+  predict:
     parameters:
-      alpha: {type: float, default: 0.5}
-      l1_ratio: {type: float, default: 0.1}
-    command: "python typical_project/train.py {alpha} {l1_ratio}"
+        file_name: ""
+    command: "python src/models/predict.py"
