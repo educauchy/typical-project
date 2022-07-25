@@ -1,4 +1,4 @@
-name: Python package
+name: "Data quality"
 
 on: [push]
 
@@ -10,6 +10,7 @@ jobs:
         python-version: ["3.7", "3.8", "3.9"]
 
     steps:
+      # This action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
@@ -20,12 +21,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install flake8 pytest
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      - name: Lint with flake8
+      - name: Test columns presence
         run: |
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      - name: Test with pytest
+          pytest test_data_quality.py::TestDataQuality::test_columns_presence
+      - name: Test columns intervals
         run: |
-          pytest
+          pytest test_data_quality.py::TestDataQuality::test_columns_intervals
+      - name: Test data drift
+        run: |
+          pytest test_data_quality.py::TestDataQuality::test_data_drift
