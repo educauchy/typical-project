@@ -140,7 +140,7 @@ if __name__ == "__main__":
 
         # Fit the model with the optimal hyperparamters
         full_pipeline.set_params(**best_params)
-        full_pipeline.fit(train_x, train_y);
+        full_pipeline.fit(train_x, train_y)
 
 
         # Predict
