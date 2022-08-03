@@ -1,4 +1,5 @@
 import pandas as pd
+import pytest
 
 
 class TestDataQuality(object):
@@ -57,9 +58,26 @@ class TestDataQuality(object):
         assert not errors, "Errors occured in splits/columns: {}".format("\n".join(errors))
 
     def test_data_drift(self):
-        assert 1 == 1
+        # check shift in distribution before and after some date
+        pass
+
+    def test_data_freshness(self):
+        splits_to_test = self.splits.copy()
+        splits_to_test.pop('scoring')
+        splits_to_test.pop('scoring_result')
+        error_splits = []
+        curr_dates = ['']
+
+        for curr_split, curr_metadata in self.splits.items():
+            report_dts = (pd.read_csv(curr_metadata['path'], sep=';', usecols=['report_dt'])).to_numpy().unique().astype(pd.datetime)
+        print(report_dts)
+        # assert not error_splits, "Splits without fresh data: {}".format("\n".join(error_splits))
+
+    def test_split_intervals_consistency(self):
+        pass
 
 
 if __name__ == '__main__':
-    TestDataQuality().test_columns_presence()
-    TestDataQuality().test_columns_intervals()
+    # TestDataQuality().test_columns_presence()
+    # TestDataQuality().test_columns_intervals()
+    TestDataQuality().test_data_freshness()
