@@ -1,11 +1,35 @@
-#!/bin/bash
+#!/usr/bin/python3
+# hook for pre commit activities (tests, linters, etc)
+import sys
+import os
 
-echo "Running tests..."
-if python -m unittest tests/test_hook.py
-then
-  echo "Tests passed!"
-  exit 0
-else
-  echo "One or more tests failed!"
-  exit 1
-fi
+
+command1 = 'flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics'
+command2 = 'flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics'
+command3 = 'python3 -m pip freeze > requirements.txt'
+
+conditions_all = [
+    os.system(command1),
+    os.system(command2),
+    os.system(command3),
+]
+
+
+if all(conditions_all):
+    print('Tests passed!')
+    sys.exit(0)
+else:
+    print('One or more tests failed!')
+    sys.exit(1)
+
+
+
+# echo "Running tests..."
+# if python -m unittest tests/test_hook.py
+# then
+#   echo "Tests passed!"
+#   exit 0
+# else
+#   echo "One or more tests failed!"
+#   exit 1
+# fi
