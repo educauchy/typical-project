@@ -7,14 +7,12 @@ from sklearn.model_selection import train_test_split
 logging.basicConfig(level=logging.WARN)
 logger = logging.getLogger(__name__)
 
-
 csv_url = '../../data/external/winequality-red-train.csv'
 try:
     df = pd.read_csv(csv_url, sep=";")
 except HTTPError as e:
     logger.exception("Unable to download training CSV, check presence of the file. Error: %s", e)
     raise Exception("Unable to download training CSV, check presence of the file. Error: %s", e)
-
 
 df['id'] = range(1, len(df) + 1)
 

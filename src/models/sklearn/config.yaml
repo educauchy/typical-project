@@ -1,8 +1,12 @@
 tracking:
   TRACKING_URI: 'http://localhost:5557'
-  EXPERIMENT_NAME: 'sklearn_experiment_1'
-  MODEL_NAME: 'test_model'
+  EXPERIMENT_NAME: 'sklearn_experiment_8'
+  MODEL_NAME: 'test_model_new'
   ARTIFACT_PATH: 'model'
+  ARTIFACT_LOCATION: 'file://Users/educauchy/Documents/Dev/DS/Github/typical-project/models/runs'
+  MODEL_STAGE: 'None'
+  MODEL_VERSION: -1
+  random_state: 42
 params:
   0: 0
 metrics:
@@ -13,45 +17,21 @@ data:
   target: 'target'
   train_size: 0.9
 model:
-  random_state: 0
-  n_jobs: -1
-  strategy: 'model'
-  KFold_folds: 4
-  encoding:
-    - column: 'feature_13'
-      out_column: 'feature_13_enc'
-      method: 'label'
-      data: False
-    - column: 'feature_22'
-      out_column: 'feature_22_enc'
-      method: 'label'
-      data: False
-    - column: 'feature_36'
-      out_column: 'feature_36_enc'
-      method: 'label'
-      data: False
-  f_inter:
-    params:
-      degree: 2
-      interaction_only: False
-      include_bias: False
-  f_selection:
-    params:
-      n_features: 50
-  anomaly:
-    method: 'isoforest'
-    params:
-      n_estimators: 300
-  cluster:
-    method: 'DBSCAN'
-    params:
-      eps: 1.2
-  model:
-    method: 'LGBM'
-    params:
-      max_depth: 1
-      n_estimators: 500
-  param_grid:
+  task_type: 'regression'
+  metric: 'neg_mean_squared_error'
+  method: 'RandomForestRegressor'
+  cv:
+    folds: 3
+    evals: 3
+  random_state: 42
+  params:
+    max_depth: 1
+    n_estimators: 500
+  params_hyperopt:
+    max_depth: [ 1, 5, 1 ]
+#    min_samples_split: [2, 10, 1]
+#    min_samples_leaf: [2, 10, 1]
+  params_grid:
     impute__n_neighbors: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     anomaly__n_neighbors: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     cluster__eps: [0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2, 2.2, 2.4, 2.6, 2.8, 3]

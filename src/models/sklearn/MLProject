@@ -1,14 +1,13 @@
 # Название проекта
 name: typical_project
 
-# Описание окружения. В данном случае окружение находится в
-# файле conda.yml.
-conda_env: conda_environment.yml
+# Описание окружения
+conda_env: conda_environment.yaml
 
 entry_points:
   main:
-    command: "python src/models/train.py"
+    command: "python train.py"
   predict:
     parameters:
         file_name: ""
-    command: "python src/models/predict.py"
+    command: "python predict.py"

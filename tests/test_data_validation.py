@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 
 
-class TestDataQuality(object):
+class TestDataValidation(object):
     splits = {
         'train': {
             'path': './data/processed/winequality-red-train.csv',
@@ -62,16 +62,16 @@ class TestDataQuality(object):
         pass
 
     def test_data_freshness(self):
-        splits_to_test = self.splits.copy()
-        splits_to_test.pop('scoring')
-        splits_to_test.pop('scoring_result')
-        error_splits = []
-        curr_dates = ['']
-
-        for curr_split, curr_metadata in self.splits.items():
-            report_dts = (pd.read_csv(curr_metadata['path'], sep=';', usecols=['report_dt'])).to_numpy().unique().astype(pd.datetime)
-        print(report_dts)
+        # splits_to_test = self.splits.copy()
+        # splits_to_test.pop('scoring')
+        # splits_to_test.pop('scoring_result')
+        # error_splits = []
+        # curr_dates = ['']
+        #
+        # for curr_split, curr_metadata in self.splits.items():
+        #     report_dts = (pd.read_csv(curr_metadata['path'], sep=';', usecols=['report_dt'])).to_numpy().unique().astype(pd.datetime)
         # assert not error_splits, "Splits without fresh data: {}".format("\n".join(error_splits))
+        pass
 
     def test_split_intervals_consistency(self):
         pass
@@ -80,4 +80,4 @@ class TestDataQuality(object):
 if __name__ == '__main__':
     # TestDataQuality().test_columns_presence()
     # TestDataQuality().test_columns_intervals()
-    TestDataQuality().test_data_freshness()
+    TestDataValidation().test_data_freshness()

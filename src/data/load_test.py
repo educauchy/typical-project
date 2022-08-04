@@ -7,7 +7,6 @@ import pandas as pd
 logging.basicConfig(level=logging.WARN)
 logger = logging.getLogger(__name__)
 
-
 load_method = 'csv'
 
 if load_method == 'db':
@@ -29,7 +28,6 @@ if load_method == 'db':
             df = pd.read_sql_query(script, session)
             session.close()
         return df
-
 
     script = "SELECT * FROM SCHEMA.TABLE LIMIT 10"
     df = db2(script)

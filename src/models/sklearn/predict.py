@@ -7,7 +7,6 @@ import logging
 logging.basicConfig(level=logging.WARN)
 logger = logging.getLogger(__name__)
 
-
 csv_url = '../../../data/processed/winequality-red-scoring.csv'
 try:
     data = pd.read_csv(csv_url, sep=";")

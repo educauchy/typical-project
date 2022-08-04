@@ -1,22 +1,22 @@
 import warnings
 import sys
 import logging
-import urllib
 from urllib.parse import urlparse
 from urllib.error import HTTPError
 import yaml
 import pandas as pd
 import numpy as np
 from sklearn.pipeline import Pipeline
-from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV, KFold, cross_val_score
+from sklearn.model_selection import train_test_split, KFold, cross_val_score
 from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+from sklearn.ensemble import RandomForestRegressor
 import mlflow.sklearn
-from mlflow.tracking import MlflowClient
+# from mlflow.tracking import MlflowClient
 from mlflow.models.signature import infer_signature
-from hyperopt import hp, fmin, tpe, Trials, space_eval
+from hyperopt import hp, fmin, tpe, Trials
 
 
 logging.basicConfig(level=logging.WARN)
@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 def objective(params):
     full_pipeline.set_params(**params)
     cv = KFold(n_splits=config['model']['cv']['folds'], shuffle=True)
-    score = cross_val_score(full_pipeline, train_x, train_y, cv=cv, scoring='neg_log_loss', n_jobs=1)
+    score = cross_val_score(full_pipeline, train_x, train_y, cv=cv, scoring=config['model']['metric'], n_jobs=1)
     return score.mean()
 
 
@@ -40,12 +40,13 @@ def eval_metrics(actual, pred):
 
 # load config
 try:
-    with open ('./config.yaml', 'r') as file:
+    with open('./config.yaml', 'r') as file:
         config = yaml.safe_load(file)
 except yaml.YAMLError as exc:
-    logging.error(exec)
+    logging.error(exc)
     sys.exit(1)
 except Exception as e:
+    logging.error(e)
     logging.error('Error reading the config file')
     sys.exit(1)
 
@@ -56,17 +57,16 @@ mlflow.set_tracking_uri(config['tracking']['TRACKING_URI'])
 try:
     experiment = mlflow.set_experiment(experiment_name=config['tracking']['EXPERIMENT_NAME'])
 except Exception:
-    artifact_location = 'file:///Users/educauchy/Documents/Dev/DS/GBC/mlops_project_mlflow/reports/mlruns'
+    artifact_location = 'file:///Users/educauchy/Documents/Dev/DS/Github/typical-project/models/mlruns'
     experiment = mlflow.create_experiment(name=config['tracking']['EXPERIMENT_NAME'],
                                           artifact_location=artifact_location)
-
 
 
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
     np.random.seed(config['tracking']['random_state'])
 
-    csv_url = '../../data/processed/winequality-red-train.csv'
+    csv_url = '../../../data/processed/winequality-red-train.csv'
     try:
         data = pd.read_csv(csv_url, sep=";")
     except HTTPError as e:
@@ -79,14 +79,9 @@ if __name__ == "__main__":
     train_y = data[["quality"]]
     test_y = data[["quality"]]
 
-    # alpha = float(sys.argv[1]) if len(sys.argv) > 1 else 0.5
-    # l1_ratio = float(sys.argv[2]) if len(sys.argv) > 2 else 0.5
-
     client = mlflow.tracking.MlflowClient()
     run = client.create_run(experiment.experiment_id)
     with mlflow.start_run(run_id=run.info.run_id):
-        # model = ElasticNet(alpha=alpha, l1_ratio=l1_ratio, random_state=42)
-        # model.fit(train_x, train_y)
         pipeline_steps = []
 
         # NUMERIC STEPS
@@ -118,39 +113,43 @@ if __name__ == "__main__":
             ]
         )
         pipeline_steps.append(('preprocess', preprocessor))
+        pipeline_steps.append(('model', RandomForestRegressor()))
         full_pipeline = Pipeline(steps=pipeline_steps)
 
-
         space = {}
-        for param, values in config['model']['param_hyperopt'].items():
+        for param, values in config['model']['params_hyperopt'].items():
             if len(values) > 3:
-                space[param] = values
+                space[f'model__{param}'] = hp.choice(lable=param, *values)
+                mlflow.log_param(f'{param}_values', values)
             else:
-                space[param] = np.arange(*values)
+                space[f'model__{param}'] = hp.quniform(label=param,
+                                                       low=values[0],
+                                                       high=values[1],
+                                                       q=values[2])
+                mlflow.log_param(f'{param}_min', values[0])
+                mlflow.log_param(f'{param}_max', values[1])
 
         trials = Trials()
-        best = fmin(objective,
-                    space,
-                    algo=tpe.suggest,
-                    max_evals=50,
-                    trials=trials)
+        best_params = fmin(objective,
+                           space,
+                           algo=tpe.suggest,
+                           max_evals=config['model']['cv']['evals'],
+                           trials=trials)
 
-        # Get the values of the optimal parameters
-        best_params = space_eval(space, best)
+        best_params_ = {}
+        for key, value in best_params.items():
+            if round(value) == value:
+                value = int(value)
+
+            best_params_[f'model__{key}'] = value
 
         # Fit the model with the optimal hyperparamters
-        full_pipeline.set_params(**best_params)
+        full_pipeline.set_params(**best_params_)
         full_pipeline.fit(train_x, train_y)
-
 
         # Predict
         predicted_qualities = full_pipeline.predict(test_x)
         (rmse, mae, r2) = eval_metrics(test_y, predicted_qualities)
-
-        # mlflow.log_params({
-        #     'alpha': alpha,
-        #     'l1_ratio': l1_ratio,
-        # })
 
         mlflow.log_metrics({
             'mae': mae,
@@ -158,8 +157,8 @@ if __name__ == "__main__":
             'r2': r2,
         })
 
-        mlflow.log_artifact('./MLProject')
-        mlflow.log_artifact('./conda_environment.yaml')
+        mlflow.log_artifact('MLProject')
+        mlflow.log_artifact('conda_environment.yaml')
 
         tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
         # Model registry does not work with file store
@@ -178,27 +177,27 @@ if __name__ == "__main__":
                                           input_example=train_x.iloc[0].to_dict()
                                           )
 
-        model_uri = "runs:/{run_id}/{artifact_path}".format(run_id=run.info.run_id,
-                                                            artifact_path=lm.artifact_path)
-        result = mlflow.register_model(
-            model_uri=model_uri,
-            name=config['tracking']['MODEL_NAME']
-        )
+        # model_uri = "runs:/{run_id}/{artifact_path}".format(run_id=run.info.run_id,
+        #                                                     artifact_path=lm.artifact_path)
+        # result = mlflow.register_model(
+        #     model_uri=model_uri,
+        #     name=config['tracking']['MODEL_NAME']
+        # )
 
-        client = MlflowClient()
-        curr_version = client.get_latest_versions(
-            name=config['tracking']['MODEL_NAME'],
-            stages=['None']
-        )
-
-        client.update_model_version(
-            name=config['tracking']['MODEL_NAME'],
-            version=curr_version[0].version,
-            description="This model version is a scikit-learn random forest containing 100 decision trees"
-        )
-
-        client.transition_model_version_stage(
-            name=config['tracking']['MODEL_NAME'],
-            version=curr_version[0].version,
-            stage="Staging"
-        )
+        # client = MlflowClient()
+        # curr_version = client.get_latest_versions(
+        #     name=config['tracking']['MODEL_NAME'],
+        #     stages=['None']
+        # )
+        #
+        # client.update_model_version(
+        #     name=config['tracking']['MODEL_NAME'],
+        #     version=curr_version[0].version,
+        #     description="This model version is a scikit-learn random forest containing 100 decision trees"
+        # )
+        #
+        # client.transition_model_version_stage(
+        #     name=config['tracking']['MODEL_NAME'],
+        #     version=curr_version[0].version,
+        #     stage="Staging"
+        # )
