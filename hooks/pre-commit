@@ -7,14 +7,15 @@ import os
 command1 = 'flake8 ./src --count --select=E9,F63,F7,F82 --show-source --statistics'
 command2 = 'flake8 ./src --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics'
 command3 = 'python3 -m pip freeze > requirements.txt'
+command4 = 'pip check'
 
 # os.system returns exit code, 0 - success
 conditions_all = [
     not os.system(command1),
     not os.system(command2),
     not os.system(command3),
+    not os.system(command4),
 ]
-
 
 if all(conditions_all):
     print('Tests passed!')
