@@ -23,10 +23,10 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Test model training time
         run: |
-          pytest test_model_validation.py::TestModelValidation::test_model_prediction_time
+          pytest tests/test_model_validation.py::TestModelValidation::test_model_prediction_time
       - name: Test model prediction quality
         run: |
-          pytest test_model_validation.py::TestModelValidation::test_model_prediction_quality
+          pytest tests/test_model_validation.py::TestModelValidation::test_model_prediction_quality
       - name: Test model superiority over old ones
         run: |
-          pytest test_model_valiation.py::TestModelValidation::test_model_superiority
+          pytest tests/test_model_valiation.py::TestModelValidation::test_model_superiority

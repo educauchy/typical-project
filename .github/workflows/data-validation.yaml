@@ -23,16 +23,16 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Test columns presence
         run: |
-          pytest test_data_validation.py::TestDataValidation::test_columns_presence
+          pytest tests/test_data_validation.py::TestDataValidation::test_columns_presence
       - name: Test columns intervals
         run: |
-          pytest test_data_validation.py::TestDataValidation::test_columns_intervals
+          pytest tests/test_data_validation.py::TestDataValidation::test_columns_intervals
       - name: Test data drift
         run: |
-          pytest test_data_validation.py::TestDataValidation::test_data_drift
+          pytest tests/test_data_validation.py::TestDataValidation::test_data_drift
       - name: Test data freshness
         run: |
-          pytest test_data_validation.py::TestDataValidation::test_data_freshness
+          pytest tests/test_data_validation.py::TestDataValidation::test_data_freshness
       - name: Test split intervals consistency
         run: |
-          pytest test_data_validation.py::TestDataValidation::test_split_intervals_consistency
+          pytest tests/test_data_validation.py::TestDataValidation::test_split_intervals_consistency
