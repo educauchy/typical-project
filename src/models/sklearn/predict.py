@@ -27,4 +27,4 @@ model = mlflow.sklearn.load_model(model_path)
 data['score'] = model.predict(data)
 data['id'] = ids
 
-data.to_csv('../../../data/processed/winequality-red-scoring-result.csv', index=False)
+data.to_csv('../../../data/processed/winequality-red-scoring-result.csv', sep=';', decimal='.', index=False)
