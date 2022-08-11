@@ -37,5 +37,16 @@ mlflow models predict --model-uri 'models:/logistic_regression/None' --input-pat
 curl "http://localhost:5557/invocations" \
 -H 'Content-Type: application/json' \
 -d '{"columns": ["id", "fixed acidity", "volatile acidity", "citric acid", "residual sugar", "chlorides", "free sulfur dioxide", "total sulfur dioxide", "density", "pH", "sulphates", "alcohol"], "data": [[1000001, 6.6, 0.52, 0.04, 2.2, 0.069, 8.0, 15.0, 0.9956, 3.4, 0.63, 9.4]]}'
+```
 
+Here are some useful sqlite3 commands
+```shell
+'.headers ON' > ~/.sqliterc
+'.mode columns' >> ~/.sqliterc
+
+sqlite3 mlflow.db
+.databases # display databases
+.tables    # display tables
+
+sqlite3 mlflow.db 'select * runs where experiment_id = 13'
 ```
