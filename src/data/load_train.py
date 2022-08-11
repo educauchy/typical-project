@@ -14,4 +14,8 @@ except HTTPError as e:
     logger.exception("Unable to download training & test CSV, check your internet connection. Error: %s", e)
     raise Exception("Unable to download training & test CSV, check your internet connection. Error: %s", e)
 
+df.to_csv('../../data/external/winequality-red.csv', sep=';', index=False)
+
+df = df.drop(df[~df.quality.isin([5,6])].index)
+df.replace({'quality': {5: 0, 6: 1}}, inplace=True)
 df.to_csv('../../data/external/winequality-red-train.csv', sep=';', index=False)

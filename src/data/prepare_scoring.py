@@ -18,4 +18,5 @@ data = {
 }
 
 df = pd.DataFrame(data=[data])
-df.to_csv('../../data/processed/winequality-red-scoring.csv', sep=';', decimal='.', index=False)
+# sep=',' а не ';', потому что нельзя задать сепаратор, когда вызываем датафрейм на скоринг из терминала
+df.to_csv('../../data/processed/winequality-red-scoring.csv', sep=',', decimal='.', index=False)
