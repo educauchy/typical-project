@@ -9,5 +9,8 @@ entry_points:
     command: "python train.py"
   predict:
     parameters:
-        file_name: ""
-    command: "python predict.py"
+        scoring_url: {type: str, default: "../../../data/processed/winequality-red-scoring.csv"}
+        model_name: {type: str, default: "logistic_regression"}
+        model_stage: {type: str, default: "Staging"}
+        scoring_result_url: {type: str, default: "../../../data/processed/winequality-red-scoring-result.csv"}
+    command: "python predict.py -r {scoring_url} {model_name} {model_stage} {scoring_result_url}"
