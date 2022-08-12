@@ -3,15 +3,17 @@ tracking:
   EXPERIMENT_NAME: 'wine_quality_red'
   MODEL_NAME: 'logistic_regression'
   ARTIFACT_PATH: 'model'
-  ARTIFACT_LOCATION: 'file:///Users/educauchy/Documents/Dev/DS/Github/typical-project/models/mlruns'
+  ARTIFACT_LOCATION: '/typical_project/models/mlruns'
   MODEL_STAGE: 'None'
   MODEL_VERSION: 1
-  PROJECT_ROOT: '/Users/educauchy/Documents/Dev/DS/Github/typical-project'
-  FIGURES_PATH: '/Users/educauchy/Documents/Dev/DS/Github/typical-project/reports/figures'
+  PROJECT_ROOT: '/typical_project'
+  FIGURES_PATH: '/typical_project/reports/figures'
   random_state: 4490
 data:
-  train: '../../../data/processed/winequality-red-train.csv'
-  test: '../../../data/processed/windequality-red-test.csv'
+#  train: '../../../data/processed/winequality-red-train.csv'
+#  test: '../../../data/processed/windequality-red-test.csv'
+  train: '/typical_project/data/processed/winequality-red-train.csv'
+  test: '/typical_project/data/processed/windequality-red-test.csv'
   target: 'quality'
   train_size: 0.9
 model:

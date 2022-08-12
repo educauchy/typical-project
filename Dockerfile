@@ -1,9 +1,14 @@
 FROM continuumio/miniconda3
 
-COPY requirements.txt ./
+COPY requirements.txt /typical_project/requirements.txt
 
-RUN python3.7 -m venv venv
-RUN source venv/bin/activate
-RUN pip install -r requirements.txt
+RUN /bin/bash -c "cd /typical_project; python -m venv venv; source venv/bin/activate"
+RUN /bin/bash -c "pip install -r /typical_project/requirements.txt"
 
-CMD ["python", "./src/models/sklearn", "--entry-point", "predict"]
+COPY data/ /typical_project/data/
+COPY src/ /typical_project/src/
+COPY models/ /typical_project/models/
+COPY reports/ /typical_project/reports/
+
+
+CMD ["python", "/typical_project/src/models/sklearn/train.py"]
