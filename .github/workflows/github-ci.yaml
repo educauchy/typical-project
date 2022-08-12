@@ -15,11 +15,12 @@ jobs:
       - name: Access the repo
         uses: actions/checkout@v3
       - name: Set up Python 3.7                               # установка версии Python
+        uses: actions/setup-python@v4
         with:
           python-version: 3.7
       - name: Install dependencies and run environment        # воспроизведение рабочего окружения
         run: |
-          python3.7 -m venv venv
+          python -m venv venv
           source venv/bin/activate
           pip install -r requirements.txt
       - name: Start tests                                     # запуск тестов
