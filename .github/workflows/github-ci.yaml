@@ -1,0 +1,36 @@
+name: Model image build
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python 3.7                               # установка версии Python
+        with:
+          python-version: 3.7
+      - name: Install dependencies and run environment        # воспроизведение рабочего окружения
+        run: |
+          python3.7 -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+      - name: Start tests                                     # запуск тестов
+        run: |
+          pytest tests/test_data_validation.py
+          pytest tests/test_model_validation.py
+      - name: Login to Docker Hub                             # авторизация в DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: Build and push                                  # отправка образа на DockerHub
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/predict:latest

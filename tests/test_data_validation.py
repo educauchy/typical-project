@@ -8,13 +8,13 @@ class TestDataValidation(object):
             'path': './data/processed/winequality-red-train.csv',
             'needed_cols': ['fixed acidity', 'volatile acidity', 'citric acid', 'residual sugar',
                             'chlorides', 'free sulfur dioxide', 'total sulfur dioxide', 'density',
-                            'pH', 'sulphates', 'alcohol', 'quality']
+                            'pH', 'sulphates', 'alcohol', 'quality', 'id']
         },
         'test': {
             'path': './data/processed/winequality-red-test.csv',
             'needed_cols': ['fixed acidity', 'volatile acidity', 'citric acid', 'residual sugar',
                             'chlorides', 'free sulfur dioxide', 'total sulfur dioxide', 'density',
-                            'pH', 'sulphates', 'alcohol', 'quality']
+                            'pH', 'sulphates', 'alcohol', 'quality', 'id']
         },
         'scoring': {
             'path': './data/processed/winequality-red-scoring.csv',
@@ -44,7 +44,7 @@ class TestDataValidation(object):
 
     def test_columns_intervals(self):
         col_ranges = {
-            'quality': [1, 10]
+            'quality': [0, 10]
         }
         errors = []
         for curr_split, curr_metadata in self.splits.items():
