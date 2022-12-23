@@ -1,18 +1,15 @@
 FROM python:3.8-slim
 MAINTAINER Vadim Glukhov <educauchy@gmail.com>
 
-RUN apt-get update && \
-	apt-get install
+COPY requirements.txt /typical_project/requirements.txt
 
-COPY requirements.txt /app/requirements.txt
+RUN /bin/bash -c "pip install -r /typical_project/requirements.txt"
 
-RUN /bin/bash -c "pip install -r /app/requirements.txt"
+COPY data/ /typical_project/data/
+COPY src/ /typical_project/src/
+COPY models/ /typical_project/models/
+COPY reports /typical_project/reports
 
-COPY data/ /app/data/
-COPY src/ /app/src/
-COPY models/ /app/models/
-COPY reports /app/reports
+WORKDIR /typical_project
 
-WORKDIR /app
-
-CMD ["python", "/app/src/models/train.py"]
+CMD ["python", "/typical_project/src/models/sklearn/train.py"]

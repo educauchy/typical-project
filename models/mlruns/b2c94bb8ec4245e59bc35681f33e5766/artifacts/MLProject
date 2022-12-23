@@ -1,0 +1,16 @@
+# Название проекта
+name: typical_project
+
+# Описание окружения
+conda_env: conda_environment.yaml
+
+entry_points:
+  main:
+    command: "python train.py"
+  predict:
+    parameters:
+        scoring_url: {type: str, default: "../../../data/processed/winequality-red-scoring.csv"}
+        model_name: {type: str, default: "random_forest"}
+        model_stage: {type: str, default: "None"}
+        scoring_result_url: {type: str, default: "../../../data/processed/winequality-red-scoring-result.csv"}
+    command: "python predict.py -r {scoring_url} {model_name} {model_stage} {scoring_result_url}"

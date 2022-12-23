@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+# hook for validate commit message
 import re
 import sys
 

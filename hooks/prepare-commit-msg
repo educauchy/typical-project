@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+# hook for commit template preparation
 import re
 import sys
 from subprocess import check_output

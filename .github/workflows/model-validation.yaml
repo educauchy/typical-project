@@ -1,0 +1,32 @@
+name: "Model quality"
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.7", "3.8"]
+
+    steps:
+      # This action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
+      - name: Access the repo
+        uses: actions/checkout@v3
+      - name: Configure Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Test model training time
+        run: |
+          pytest tests/test_model_validation.py::TestModelValidation::test_model_prediction_time
+#      - name: Test model prediction quality
+#        run: |
+#          pytest tests/test_model_validation.py::TestModelValidation::test_model_prediction_quality
+#      - name: Test model superiority over old ones
+#        run: |
+#          pytest tests/test_model_valiation.py::TestModelValidation::test_model_superiority
