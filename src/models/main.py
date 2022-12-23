@@ -1,10 +1,6 @@
 import os
-import warnings
-import sys
-
 import numpy as np
-
-from sklearn.datasets import make_classification, load_breast_cancer
+from sklearn.datasets import load_breast_cancer
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split, GridSearchCV
@@ -12,8 +8,6 @@ from sklearn.metrics import roc_auc_score, accuracy_score, f1_score, precision_s
 from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler
-
-import mlflow
 import mlflow.sklearn
 
 
@@ -28,7 +22,7 @@ try:
     EXPERIMENT_ID = mlflow.create_experiment(experiment_name,
                         artifact_location=artifact_location)
     mlflow.set_experiment(experiment_id=EXPERIMENT_ID)
-except:
+except ValueError:
     EXPERIMENT_ID = mlflow.get_experiment_by_name(experiment_name).experiment_id
     mlflow.set_experiment(experiment_id=EXPERIMENT_ID)
 
@@ -47,13 +41,12 @@ numeric_features = X.select_dtypes(include=['int64', 'float64']).columns
 numeric_transformer_steps = []
 
 imputer = SimpleImputer(missing_values=np.nan, strategy='mean')
-numeric_transformer_steps.append( ('imputer', imputer) )
+numeric_transformer_steps.append(('imputer', imputer))
 
 scaler = StandardScaler()
-numeric_transformer_steps.append( ('scaler', scaler) )
+numeric_transformer_steps.append(('scaler', scaler))
 
 numeric_transformer = Pipeline(numeric_transformer_steps)
-
 
 
 # CATEGORICAL STEPS
@@ -61,10 +54,9 @@ categorical_features = X.select_dtypes(include=['object', 'bool']).columns
 categorical_transformer_steps = []
 
 imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-categorical_transformer_steps.append( ('imputer', imputer) )
+categorical_transformer_steps.append(('imputer', imputer))
 
 categorical_transformer = Pipeline(categorical_transformer_steps)
-
 
 
 # JOIN NUMERIC AND CATEGORICAL
@@ -74,7 +66,7 @@ preprocessor = ColumnTransformer(
         ('cat', categorical_transformer, categorical_features)
     ]
 )
-pipeline_steps.append( ('preprocess', preprocessor) )
+pipeline_steps.append(('preprocess', preprocessor))
 
 
 # MODEL
@@ -84,7 +76,7 @@ param_grid = {
     'model__min_samples_leaf': [5, 6, 7],
 }
 clf = DecisionTreeClassifier()
-pipeline_steps.append( ('model', clf) )
+pipeline_steps.append(('model', clf))
 pipeline = Pipeline(steps=pipeline_steps)
 pipe = GridSearchCV(pipeline, param_grid=param_grid, scoring='accuracy', cv=4)
 pipe.fit(X_train, y_train)
