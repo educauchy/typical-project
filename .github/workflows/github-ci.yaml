@@ -1,4 +1,4 @@
-name: "Model image build"
+name: "Model image build and push"
 
 on:
   push:
@@ -38,4 +38,4 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/typical-project:latest
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPO }}:latest
