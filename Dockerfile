@@ -1,4 +1,5 @@
-FROM continuumio/miniconda3
+FROM python:3.8-slim
+MAINTAINER Vadim Glukhov <educauchy@gmail.com>
 
 COPY requirements.txt /typical_project/requirements.txt
 
