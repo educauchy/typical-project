@@ -129,5 +129,11 @@ dmypy.json
 .pyre/
 
 # Custom
-env_typical_project/
-app/experiments/
+.idea
+models/
+data/
+reports/figures/*.png
+reports/figures/*.jpg
+reports/figures/*.jpeg
+reports/figures/*.svg
+reports/figures/*.gif
