@@ -1,4 +1,3 @@
-import os
 import warnings
 import sys
 import logging
@@ -13,17 +12,15 @@ from sklearn.model_selection import train_test_split, KFold, cross_val_score
 from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score, plot_roc_curve, roc_curve,\
-                            accuracy_score, auc, f1_score, precision_score, recall_score, roc_auc_score
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score, roc_curve,\
+                            accuracy_score, f1_score, precision_score, recall_score, roc_auc_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import LinearSVC
 from sklearn.ensemble import AdaBoostClassifier
-from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 import mlflow.sklearn
-from mlflow.tracking import MlflowClient
 from mlflow.models.signature import infer_signature
 from hyperopt import hp, fmin, tpe, Trials
-from typing import Dict, Any, List
+from typing import Dict, Any
 
 
 logging.basicConfig(level=logging.WARN)
@@ -36,6 +33,7 @@ def objective(params):
     cv = KFold(n_splits=config['model']['cv']['folds'], shuffle=True)
     score = cross_val_score(full_pipeline, train_x, train_y, cv=cv, scoring=config['model']['main_metric'], n_jobs=1)
     return score.mean()
+
 
 def eval_metrics(actual, pred_labels, pred_probs, task_type='classification') -> Dict[str, Any]:
     metrics = {}
@@ -52,9 +50,6 @@ def eval_metrics(actual, pred_labels, pred_probs, task_type='classification') ->
     return metrics
 
 
-# os.system('mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./models/mlruns --host 0.0.0.0 --port 5558')
-
-# load config
 try:
     with open('/typical_project/src/models/sklearn/config.yaml', 'r') as file:
         config = yaml.safe_load(file)
@@ -71,7 +66,7 @@ except Exception as e:
 try:
     print('Create experiment')
     experiment_id = mlflow.create_experiment(name=config['tracking']['EXPERIMENT_NAME'],
-                                             artifact_location=config['tracking']['ARTIFACT_LOCATION']) # /mlruns
+                                             artifact_location=config['tracking']['ARTIFACT_LOCATION'])
     experiment = mlflow.set_experiment(experiment_id=experiment_id)
 except Exception:
     print('Set experiment')
@@ -257,6 +252,3 @@ if __name__ == "__main__":
         #     version=curr_version[0].version,
         #     stage="Staging"
         # )
-
-
-
