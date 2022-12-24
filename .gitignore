@@ -130,10 +130,15 @@ dmypy.json
 
 # Custom
 .idea
+.minio.sys/
+minio/
+mlflow/
 models/
-data/
+data/*.csv
+data/*/*.csv
 reports/figures/*.png
 reports/figures/*.jpg
 reports/figures/*.jpeg
 reports/figures/*.svg
 reports/figures/*.gif
+

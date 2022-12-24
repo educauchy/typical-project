@@ -1,5 +1,6 @@
-import warnings
+import os
 import sys
+import warnings
 import logging
 from urllib.parse import urlparse
 from urllib.error import HTTPError
@@ -17,6 +18,7 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score, r
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import LinearSVC
 from sklearn.ensemble import AdaBoostClassifier
+from sklearn.tree import DecisionTreeClassifier
 import mlflow.sklearn
 from mlflow.models.signature import infer_signature
 from hyperopt import hp, fmin, tpe, Trials
@@ -51,7 +53,7 @@ def eval_metrics(actual, pred_labels, pred_probs, task_type='classification') ->
 
 
 try:
-    with open('/typical_project/src/models/sklearn/config.yaml', 'r') as file:
+    with open('config.yaml', 'r') as file:
         config = yaml.safe_load(file)
 except yaml.YAMLError as exc:
     logging.error(exc)
@@ -62,15 +64,15 @@ except Exception as e:
     sys.exit(1)
 
 
-# mlflow.set_tracking_uri(uri=config['tracking']['TRACKING_URI'])
 try:
     print('Create experiment')
-    experiment_id = mlflow.create_experiment(name=config['tracking']['EXPERIMENT_NAME'],
-                                             artifact_location=config['tracking']['ARTIFACT_LOCATION'])
+    experiment_id = mlflow.create_experiment(name=os.getenv('MLFLOW_EXPERIMENT_NAME'),
+                                             artifact_location=os.getenv("MLFLOW_ARTIFACT_LOCATION")
+    )
     experiment = mlflow.set_experiment(experiment_id=experiment_id)
 except Exception:
     print('Set experiment')
-    experiment = mlflow.set_experiment(experiment_name=config['tracking']['EXPERIMENT_NAME'])
+    experiment = mlflow.set_experiment(experiment_name=os.getenv('MLFLOW_EXPERIMENT_NAME'))
 
 
 if __name__ == "__main__":
@@ -132,6 +134,8 @@ if __name__ == "__main__":
             curr_model = LinearSVC()
         elif config['model']['method'] == 'AdaBoostClassifier':
             curr_model = AdaBoostClassifier()
+        elif config['model']['method'] == 'DeicisionTreeClassifier':
+            curr_model = DecisionTreeClassifier()
 
         pipeline_steps.append(('model', curr_model))
         full_pipeline = Pipeline(steps=pipeline_steps)
@@ -200,9 +204,8 @@ if __name__ == "__main__":
         plt.savefig(roc_curve_path)
 
         mlflow.log_artifact(roc_curve_path)
-        mlflow.log_artifact('/typical_project/src/models/sklearn/config.yaml')
-        mlflow.log_artifact('/typical_project/src/models/sklearn/MLProject')
-        mlflow.log_artifact('/typical_project/src/models/sklearn/conda_environment.yaml')
+        mlflow.log_artifact('config.yaml')
+        mlflow.log_artifact('MLProject')
 
         # we can also use the following
         # mlflow.log_text
@@ -214,18 +217,18 @@ if __name__ == "__main__":
         # Model registry does not work with file store
         if tracking_url_type_store != "file":
             lm = mlflow.sklearn.log_model(sk_model=full_pipeline,
-                                          artifact_path=config['tracking']['ARTIFACT_PATH'],
+                                          artifact_path='model',
                                           registered_model_name=config['tracking']['MODEL_NAME'],
                                           signature=infer_signature(train_x, full_pipeline.predict(train_x)),
                                           input_example=train_x.iloc[0].to_dict(),
-                                          pip_requirements='/typical_project/src/models/sklearn/requirements.txt'
+                                          pip_requirements='requirements.txt'
                                           )
         else:
             lm = mlflow.sklearn.log_model(sk_model=full_pipeline,
-                                          artifact_path=config['tracking']['ARTIFACT_PATH'],
+                                          artifact_path='model',
                                           signature=infer_signature(train_x, full_pipeline.predict(train_x)),
                                           input_example=train_x.iloc[0].to_dict(),
-                                          pip_requirements='/typical_project/src/models/sklearn/requirements.txt'
+                                          pip_requirements='requirements.txt'
                                           )
 
         # model_uri = "runs:/{run_id}/{artifact_path}".format(run_id=run.info.run_id,
