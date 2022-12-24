@@ -11,6 +11,40 @@ Components:
 - Dockerhub for containers storage
 - Airflow for scheduling
 
+Minio setup:
+```shell
+export MINIO_CONFIG_ENV_FILE=/etc/default/minio
+minio server ./mlflow
+```
+
+DVC setup for Minio:
+```shell
+pip install dvc[s3]
+dvc remote add -d minio s3://data -f
+dvc remote modify minioendpointurl http://127.0.0.1:9000
+dvc remote modify minio access_key_id minioadmin
+dvc remote modify minio secret_access_key minioadmin
+
+dvc add data/raw/winequality-red.csv
+dvc push -r minio data/raw/winequality-red.csv.dvc 
+```
+
+MLflow setup for Minio:
+```shell
+export AWS_ACCESS_KEY_ID='minioadmin'
+export AWS_SECRET_ACCESS_KEY='minioadmin'
+export MLFLOW_TRACKING_URI=sqlite:///mlflow.db
+export MLFLOW_S3_ENDPOINT_URL=http://127.0.0.1:9000
+export MLFLOW_ARTIFACT_LOCATION=s3://mlflow
+export MLFLOW_EXPERIMENT_NAME='wine_quality_red_minio_3'
+export MLFLOW_MODEL_NAME='wine_quality_red_minio_3'
+mlflow server --backend-store-uri sqlite:///mlflow.db \
+              --default-artifact-root minio/ \
+              --artifacts-destination s3://mlflow \
+              --host 127.0.0.1 --port 5558
+venv/bin/python3.7 src/models/retrain.py
+```
+
 
 Here are some useful MLflow CLI commands
 ```shell

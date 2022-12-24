@@ -80,4 +80,5 @@ class TestDataValidation(object):
 if __name__ == '__main__':
     # TestDataQuality().test_columns_presence()
     # TestDataQuality().test_columns_intervals()
-    TestDataValidation().test_data_freshness()
+    # TestDataValidation().test_data_freshness()
+    pass

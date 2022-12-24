@@ -1,19 +1,13 @@
 tracking:
-  TRACKING_URI: 'http://localhost:5558'
-  EXPERIMENT_NAME: 'wine_quality_red'
-  MODEL_NAME: 'logistic_regression'
+  MODEL_NAME: 'decision_tree'
   ARTIFACT_PATH: 'model'
-  ARTIFACT_LOCATION: '/typical_project/models/mlruns'
   MODEL_STAGE: 'None'
   MODEL_VERSION: 1
-  PROJECT_ROOT: '/typical_project'
-  FIGURES_PATH: '/typical_project/reports/figures'
+  FIGURES_PATH: 'reports/figures'
   random_state: 4490
 data:
-#  train: '../../../data/processed/winequality-red-train.csv'
-#  test: '../../../data/processed/windequality-red-test.csv'
-  train: '/typical_project/data/processed/winequality-red-train.csv'
-  test: '/typical_project/data/processed/windequality-red-test.csv'
+  train: 'data/processed/winequality-red-train.csv'
+  test: 'data/processed/windequality-red-test.csv'
   target: 'quality'
   train_size: 0.9
 model:

@@ -94,4 +94,5 @@ class TestModelValidation(object):
 
 
 if __name__ == '__main__':
-    TestModelValidation().test_model_superiority()
+    # TestModelValidation().test_model_superiority()
+    pass
